@@ -1,0 +1,95 @@
+Created At: 2026-06-10T14:26:08Z
+Completed At: 2026-06-10T14:26:08Z
+File Path: `file:///d:/project/project-rental-outdoor/tiga-titik-outdoor/resources/js/Components/EquipmentCard.jsx`
+Total Lines: 261
+Total Bytes: 11909
+Showing lines 1 to 261
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: // resources/js/Components/EquipmentCard.jsx
+2: 
+3: import React, { useState } from 'react';
+4: import { Pencil, Wrench, Package, Trash2, ImageOff, ChevronLeft, ChevronRight, Camera } from 'lucide-react';
+5: import { Tent, Backpack, Flame, UtensilsCrossed, Flashlight, Mountain, Footprints, Compass, Map } from 'lucide-react';
+6: 
+7: const ICONS_MAP = {
+8:     'Tent': Tent,
+9:     'Backpack': Backpack,
+10:     'Utensils': UtensilsCrossed,
+11:     'Flashlight': Flashlight,
+12:     'Mountain': Mountain,
+13:     'Flame': Flame,
+14:     'Footprints': Footprints,
+15:     'Compass': Compass,
+16:     'Package': Package,
+17:     'Map': Map,
+18: };
+19: 
+20: const STORAGE_URL = '/storage';
+21: 
+22: /**
+23:  * Status badge with color-coded styling for equipment condition.
+24:  */
+25: function StatusBadge({ status }) {
+26:     const config = {
+27:         Maintenance: {
+28:             bg: 'bg-orange-100',
+29:             text: 'text-orange-700',
+30:             border: 'border-orange-200',
+31:             label: 'Maintenance',
+32:         },
+33:         Rusak: {
+34:             bg: 'bg-red-100',
+35:             text: 'text-red-700',
+36:             border: 'border-red-200',
+37:             label: 'Rusak',
+38:         },
+39:         Baik: {
+40:             bg: 'bg-emerald-100',
+41:             text: 'text-green-700',
+42:             border: 'border-green-200',
+43:             label: 'Aktif',
+44:         },
+45:     };
+46: 
+47:     const s = config[status] || config.Baik;
+48: 
+49:     return (
+50:         <span className={`px-2.5 py-1 text-xs font-me
+<truncated 9578 bytes>
+ width: `${stockPercentage}%` }}
+227:                         />
+228:                     </div>
+229:                 </div>
+230: 
+231:                 {/* Actions */}
+232:                 <div className="flex gap-2 mt-auto">
+233:                     <button
+234:                         onClick={() => onEdit(item)}
+235:                         className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-semibold rounded-lg hover:bg-slate-50 hover:border-slate-300 transition"
+236:                     >
+237:                         <Pencil className="w-4 h-4" /> Edit
+238:                     </button>
+239:                     <button
+240:                         onClick={() => onToggleStatus(item)}
+241:                         title={isMaintenance ? 'Selesai Maintenance' : 'Set Maintenance'}
+242:                         className={`p-2 border rounded-lg transition flex items-center justify-center ${isMaintenance
+243:                             ? 'bg-orange-50 border-orange-200 text-orange-600 hover:bg-orange-100'
+244:                             : 'bg-white border-slate-200 text-slate-400 hover:text-orange-500 hover:bg-orange-50 hover:border-orange-200'
+245:                             }`}
+246:                     >
+247:                         <Wrench className="w-4 h-4" />
+248:                     </button>
+249:                     <button
+250:                         onClick={() => onDelete(item.id)}
+251:                         title="Hapus Alat"
+252:                         className="p-2 bg-white border border-slate-200 text-slate-400 rounded-lg hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition flex items-center justify-center"
+253:                     >
+254:                         <Trash2 className="w-4 h-4" />
+255:                     </button>
+256:                 </div>
+257:             </div>
+258:         </div>
+259:     );
+260: }
+261: 
+The above content shows the entire, complete file contents of the requested file.

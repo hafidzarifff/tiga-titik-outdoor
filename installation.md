@@ -52,7 +52,7 @@ Pastikan komputer Anda sudah terinstal:
 6. **Jalankan Migrasi Database**
    Migrasi diperlukan untuk membuat tabel-tabel di database:
    ```bash
-   php artisan migrate
+   php artisan migrate:fresh --seed
    ```
    *(Jika ditanya apakah ingin membuat database SQLite karena belum ada, pilih **Yes**)*
 

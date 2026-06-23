@@ -39,11 +39,17 @@ export default function Index() {
             setIsLoading(true);
             try {
                 let apiStatus = 'pending';
+                let shortfallParams = '';
+                
                 if (activeTab === 'siap_diambil') apiStatus = 'booked';
                 if (activeTab === 'sedang_disewa') apiStatus = 'active';
                 if (activeTab === 'selesai') apiStatus = 'completed';
+                if (activeTab === 'hutang_denda') {
+                    apiStatus = 'completed';
+                    shortfallParams = '&shortfall=unpaid';
+                }
 
-                const response = await axios.get(`/api/v1/orders?status=${apiStatus}`);
+                const response = await axios.get(`/api/v1/orders?status=${apiStatus}${shortfallParams}`);
                 if (isMounted) {
                     setOrders(response.data?.data || []);
                     if (response.data?.counts) {
@@ -73,7 +79,8 @@ export default function Index() {
         { id: 'pesanan_masuk', apiStatus: 'pending', label: 'Pesanan Masuk', icon: Clock },
         { id: 'siap_diambil', apiStatus: 'booked', label: 'Siap Diambil', icon: Box },
         { id: 'sedang_disewa', apiStatus: 'active', label: 'Sedang Disewa', icon: RefreshCw },
-        { id: 'selesai', apiStatus: 'completed', label: 'Selesai', icon: Check }
+        { id: 'selesai', apiStatus: 'completed', label: 'Selesai', icon: Check },
+        { id: 'hutang_denda', apiStatus: 'hutang_denda', label: 'Hutang Denda', icon: AlertTriangle }
     ];
 
     const handleOpenDetail = (order) => {
@@ -274,14 +281,21 @@ export default function Index() {
                                                 )}
                                             </div>
                                         </td>
-                                        {activeTab === 'selesai' ? (
+                                        {activeTab === 'selesai' || activeTab === 'hutang_denda' ? (
                                             <td className="px-6 py-5">
                                                 <div className="font-bold text-slate-900">
-                                                    {formatRupiah(Number(order.rental_subtotal || 0) + Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0))}
+                                                    {formatRupiah(Number(order.rental_subtotal || 0) + Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0) + Number(order.refund_admin_fee || 0))}
                                                 </div>
-                                                {(Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0)) > 0 && (
-                                                    <div className="text-[11px] text-red-600 font-medium mt-0.5">
-                                                        (Denda: {formatRupiah(Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0))})
+                                                {(Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0) + Number(order.refund_admin_fee || 0)) > 0 && (
+                                                    <div className="flex flex-col gap-1 mt-1">
+                                                        <div className="text-[11px] text-red-600 font-medium">
+                                                            (Denda: {formatRupiah(Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0) + Number(order.refund_admin_fee || 0))})
+                                                        </div>
+                                                        {((Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0) + Number(order.refund_admin_fee || 0)) > Number(order.deposit_total || 0)) && (
+                                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold w-fit ${order.is_shortfall_paid ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                                                                {order.is_shortfall_paid ? 'Denda Lunas' : 'Belum Lunas Denda'}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 )}
                                             </td>
@@ -294,7 +308,7 @@ export default function Index() {
                                             {formatDateRange(order.expected_pickup_datetime || order.pickup_datetime, order.expected_return_datetime || order.return_datetime)}
                                         </td>
                                         <td className="px-6 py-5 text-center">
-                                            {activeTab === 'selesai' ? (
+                                            {activeTab === 'selesai' || activeTab === 'hutang_denda' ? (
                                                 <button
                                                     onClick={() => handleOpenCompleted(order)}
                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-600 bg-white border border-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
@@ -386,6 +400,7 @@ export default function Index() {
                 isOpen={isCompletedModalOpen}
                 onClose={() => setIsCompletedModalOpen(false)}
                 order={selectedOrder}
+                onSuccess={handleSuccess}
             />
 
         </AdminLayout>

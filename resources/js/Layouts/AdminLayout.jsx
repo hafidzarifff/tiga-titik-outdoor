@@ -36,7 +36,7 @@ export default function AdminLayout({ children, title }) {
                     {/* Brand */}
                     <div className="flex items-center gap-3 px-6 h-20 shrink-0 border-b border-emerald-900/50">
                         <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white shrink-0">
-                            <Tent className="w-6 h-6" />
+                            <img src="/logo.svg" className="w-14 h-14" alt="Logo" />
                         </div>
                         <div>
                             <span className="font-bold text-lg leading-tight block">Tiga Titik Outdoor</span>

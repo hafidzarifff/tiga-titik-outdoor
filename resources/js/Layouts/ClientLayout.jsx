@@ -150,7 +150,7 @@ export default function ClientLayout({ children, cartCount = 0, isLoggedIn, user
                 <aside className="hidden md:flex flex-col w-[260px] fixed inset-y-0 left-0 text-white z-50" style={{ backgroundColor: 'var(--color-bg-dark)' }}>
                     <div className="p-8 flex items-center gap-3">
                         <div className="w-10 h-10 bg-[var(--color-green-primary)] rounded-[10px] flex items-center justify-center text-white">
-                            <Tent className="w-6 h-6" />
+                            <img src="/logo.svg" className="w-14 h-14" alt="Logo" />
                         </div>
                         <h1 className="font-bold text-sm tracking-widest leading-tight uppercase">TIGA TITIK<br />OUTDOOR</h1>
                     </div>
@@ -243,7 +243,7 @@ export default function ClientLayout({ children, cartCount = 0, isLoggedIn, user
                     <header className="md:hidden h-[60px] bg-white flex items-center justify-between px-5 sticky top-0 z-50 shadow-sm">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 bg-[var(--color-green-primary)] rounded-lg flex items-center justify-center text-white">
-                                <Tent className="w-5 h-5" />
+                                <img src="/logo.svg" className="w-12 h-12" alt="Logo" />
                             </div>
                             <span className="font-bold text-[13px] text-[var(--color-bg-dark)]">TIGA TITIK</span>
                         </div>
@@ -293,7 +293,7 @@ export default function ClientLayout({ children, cartCount = 0, isLoggedIn, user
                             <div className="p-6 flex items-center justify-between border-b border-white/10">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 bg-[var(--color-green-primary)] rounded-lg flex items-center justify-center text-white">
-                                        <Tent className="w-5 h-5" />
+                                        <img src="/logo.svg" className="w-12 h-12" alt="Logo" />
                                     </div>
                                     <span className="font-bold text-sm text-white tracking-widest uppercase">MENU</span>
                                 </div>

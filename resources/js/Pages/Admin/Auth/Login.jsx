@@ -32,7 +32,7 @@ export default function Login() {
                     <div className="absolute bottom-0 left-0 p-12 lg:p-16 z-10 w-full max-w-2xl">
                         {/* Logo Tenda */}
                         <div className="text-green-500 mb-6">
-                            <Tent className="w-12 h-12" />
+                            <img src="/logo.svg" className="w-24 h-24" alt="Logo" />
                         </div>
 
                         <h1 className="text-5xl font-extrabold text-white leading-tight mb-2">
@@ -57,7 +57,7 @@ export default function Login() {
                 <div className="w-full lg:w-1/2 bg-[#042217] relative flex items-center justify-center p-8 sm:p-12">
                     {/* Header Kanan Atas */}
                     <div className="absolute top-8 right-8 flex items-center gap-2 text-white opacity-80">
-                        <Tent className="w-5 h-5 text-green-500" />
+                        <img src="/logo.svg" className="w-12 h-12 text-green-500" alt="Logo" />
                         <span className="text-sm font-semibold tracking-wider">TIGA TITIK OUTDOOR</span>
                     </div>
 

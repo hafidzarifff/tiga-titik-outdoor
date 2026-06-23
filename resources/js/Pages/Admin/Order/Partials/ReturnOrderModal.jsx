@@ -76,7 +76,7 @@ export default function ReturnOrderModal({ isOpen, onClose, onSuccess, order }) 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (order.retained_id_type !== 'none' && !isIdReturned) {
+        if (order.order_source === 'offline' && order.retained_id_type !== 'none' && !isIdReturned) {
             alert("Anda harus mencentang konfirmasi pengembalian KTP/ID pelanggan.");
             return;
         }
@@ -88,6 +88,10 @@ export default function ReturnOrderModal({ isOpen, onClose, onSuccess, order }) 
                 refund_admin_fee: adminFeeVal
             });
             alert("Pesanan berhasil diselesaikan.");
+            
+            // Buka struk di tab baru
+            window.open(`/admin/orders/${order.id}/receipt`, '_blank');
+            
             onSuccess();
             onClose();
         } catch (error) {
@@ -100,7 +104,7 @@ export default function ReturnOrderModal({ isOpen, onClose, onSuccess, order }) 
 
     if (!isOpen || !order) return null;
 
-    const needsIdReturn = order.retained_id_type !== 'none';
+    const needsIdReturn = order.order_source === 'offline' && order.retained_id_type !== 'none';
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">

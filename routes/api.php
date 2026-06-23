@@ -30,10 +30,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::patch('orders/{order:order_number}/handover', [\App\Http\Controllers\Api\OrderController::class, 'processHandover']);
     Route::get('orders/{order:order_number}/calculate-return', [\App\Http\Controllers\Api\OrderController::class, 'calculateReturn']);
     Route::post('orders/{order:order_number}/return', [\App\Http\Controllers\Api\OrderController::class, 'processReturn']);
+    Route::patch('orders/{order:order_number}/mark-shortfall-paid', [\App\Http\Controllers\Api\OrderController::class, 'markShortfallPaid']);
 });
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [\App\Http\Controllers\Api\PasswordResetController::class, 'sendResetLinkEmail']);
+Route::post('/reset-password', [\App\Http\Controllers\Api\PasswordResetController::class, 'reset']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (\Illuminate\Http\Request $request) {

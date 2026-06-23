@@ -24,7 +24,7 @@ export default function Home() {
     const [toast, setToast] = useState('');
 
     useEffect(() => {
-        getEquipments({ per_page: 6, featured: true })
+        getEquipments({ per_page: 6, featured: true, status: 'Baik' })
             .then(res => {
                 let items = [];
                 if (Array.isArray(res.data?.data?.data)) {
@@ -48,7 +48,8 @@ export default function Home() {
         setCartItems(prev => {
             const existing = prev.find(item => item.id === equipment.id);
             if (existing) {
-                return prev.map(item => item.id === equipment.id ? { ...item, qty: item.qty + 1 } : item);
+                const newQty = Math.min(existing.qty + 1, equipment.available_stock);
+                return prev.map(item => item.id === equipment.id ? { ...item, qty: newQty } : item);
             }
             return [...prev, { ...equipment, qty: 1 }];
         });

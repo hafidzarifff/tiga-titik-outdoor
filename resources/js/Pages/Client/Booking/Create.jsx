@@ -10,6 +10,7 @@ export default function Create({ cart, settings }) {
     const [userProfile, setUserProfile] = useState(auth.user || null);
     const [isQrisOpen, setIsQrisOpen] = useState(false);
     const [isTnCOpen, setIsTnCOpen] = useState(false);
+    const [validationModal, setValidationModal] = useState({ isOpen: false, missingFields: [] });
 
     useEffect(() => {
         if (!userProfile && localStorage.getItem('tto_auth_token')) {
@@ -50,8 +51,18 @@ export default function Create({ cart, settings }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!data.agree_tnc) {
-            setErrors({ agree_tnc: 'Anda harus menyetujui Syarat & Ketentuan terlebih dahulu.' });
+        let missingFields = [];
+        if (!data.expected_pickup_datetime) missingFields.push('Waktu Pengambilan');
+        if (!data.expected_return_datetime) missingFields.push('Waktu Pengembalian');
+        if (!data.ktp) missingFields.push('Verifikasi KTP / SIM');
+        if (!data.payment_proof) missingFields.push('Bukti Pembayaran');
+        if (!data.agree_tnc) missingFields.push('Persetujuan Syarat & Ketentuan');
+
+        if (missingFields.length > 0) {
+            setValidationModal({ isOpen: true, missingFields: missingFields });
+            if (!data.agree_tnc) {
+                setErrors(prev => ({ ...prev, agree_tnc: 'Anda harus menyetujui Syarat & Ketentuan terlebih dahulu.' }));
+            }
             return;
         }
 
@@ -107,7 +118,7 @@ export default function Create({ cart, settings }) {
             <Head title="Konfirmasi Penyewaan" />
 
             <div className="pt-6 pb-32 max-w-[800px] mx-auto w-full overflow-x-hidden">
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
 
                     {/* Header Card */}
                     <div className="bg-white border-2 border-[#1DD28B] rounded-[24px] md:rounded-full p-5 md:p-6 flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 shadow-sm relative overflow-hidden">
@@ -197,7 +208,7 @@ export default function Create({ cart, settings }) {
                                         {item.images && item.images.length > 0 ? (
                                             <img src={`/storage/${item.images[0].image_path}`} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                                         ) : (
-                                            <Tent className="w-6 h-6 text-slate-300" />
+                                            <img src="/logo.svg" className="w-14 h-14 text-slate-300" alt="Logo" />
                                         )}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -357,12 +368,10 @@ export default function Create({ cart, settings }) {
 
                         <button
                             type="submit"
-                            disabled={processing || !data.agree_tnc}
+                            disabled={processing}
                             className={`w-full h-14 font-black text-sm tracking-widest uppercase rounded-2xl flex items-center justify-center gap-3 transition-all ${processing 
                                 ? 'bg-slate-700 text-slate-400 cursor-wait'
-                                : !data.agree_tnc
-                                    ? 'bg-slate-700/80 text-slate-500 cursor-not-allowed border border-slate-600'
-                                    : 'bg-[#1DD28B] hover:bg-[#15b879] text-[#072F1F] shadow-lg shadow-[#1DD28B]/20 hover:-translate-y-1'
+                                : 'bg-[#1DD28B] hover:bg-[#15b879] text-[#072F1F] shadow-lg shadow-[#1DD28B]/20 hover:-translate-y-1'
                                 }`}
                         >
                             <CreditCard className="w-5 h-5" strokeWidth={2.5} />
@@ -458,6 +467,33 @@ export default function Create({ cart, settings }) {
                     <div className="p-6 border-t border-slate-100 shrink-0">
                         <button onClick={() => setIsTnCOpen(false)} className="w-full bg-[#1DD28B] text-[#072F1F] py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#15b879] transition-colors">
                             SAYA MENGERTI
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Popup Validasi */}
+            <div className={`fixed inset-0 z-[100] flex items-center justify-center transition-all duration-300 px-4 ${validationModal.isOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
+                <div className="absolute inset-0 bg-[#072F1F]/80 backdrop-blur-sm" onClick={() => setValidationModal({ isOpen: false, missingFields: [] })}></div>
+                <div className={`bg-white rounded-[32px] w-full max-w-sm overflow-hidden relative shadow-2xl transition-transform duration-300 ${validationModal.isOpen ? 'scale-100 translate-y-0' : 'scale-95 translate-y-10'}`}>
+                    <div className="p-6 bg-red-50 flex items-center gap-4 text-red-600 border-b border-red-100">
+                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+                            <AlertCircle className="w-6 h-6 text-red-500" strokeWidth={2.5} />
+                        </div>
+                        <h3 className="font-black italic text-lg uppercase tracking-tight">DATA BELUM LENGKAP</h3>
+                    </div>
+                    <div className="p-6">
+                        <p className="text-sm text-slate-600 mb-4">Harap lengkapi data berikut sebelum melanjutkan penyewaan:</p>
+                        <ul className="space-y-2 mb-6">
+                            {validationModal.missingFields.map((field, idx) => (
+                                <li key={idx} className="flex items-start gap-2 text-sm text-slate-700 font-bold">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 shrink-0"></div>
+                                    {field}
+                                </li>
+                            ))}
+                        </ul>
+                        <button onClick={() => setValidationModal({ isOpen: false, missingFields: [] })} className="w-full bg-slate-100 text-slate-700 py-3 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-slate-200 transition-colors">
+                            KEMBALI & LENGKAPI
                         </button>
                     </div>
                 </div>

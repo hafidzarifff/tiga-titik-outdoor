@@ -30,6 +30,7 @@ class Order extends Model
         'damage_fee_total',
         'refund_admin_fee',
         'payment_due_datetime',
+        'is_shortfall_paid',
     ];
 
     protected $casts = [
@@ -43,6 +44,7 @@ class Order extends Model
         'late_fee_total' => 'decimal:2',
         'damage_fee_total' => 'decimal:2',
         'refund_admin_fee' => 'decimal:2',
+        'is_shortfall_paid' => 'boolean',
     ];
 
     public function user()

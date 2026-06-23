@@ -198,7 +198,7 @@ export default function Register({ settings }) {
                 <div className="absolute top-10 right-10 flex items-center gap-3">
                     <span className="text-white font-bold tracking-widest text-sm">TIGA TITIK OUTDOOR</span>
                     <div className="bg-[#22C55E] text-white p-1.5 rounded">
-                        <Tent className="w-5 h-5" />
+                        <img src="/logo.svg" className="w-12 h-12" alt="Logo" />
                     </div>
                 </div>
 

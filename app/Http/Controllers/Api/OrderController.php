@@ -22,11 +22,18 @@ class OrderController extends Controller
     public function index(\Illuminate\Http\Request $request)
     {
         $status = $request->query('status');
+        $shortfall = $request->query('shortfall');
         
         $query = Order::with(['user.customerProfile', 'items.equipment.images'])->latest();
         
         if ($status) {
             $query->where('order_status', $status);
+        }
+
+        if ($shortfall === 'unpaid') {
+            $query->where('order_status', 'completed')
+                  ->whereRaw('(late_fee_total + damage_fee_total + refund_admin_fee) > deposit_total')
+                  ->where('is_shortfall_paid', false);
         }
         
         $orders = $query->get();
@@ -36,6 +43,10 @@ class OrderController extends Controller
             'booked' => Order::where('order_status', 'booked')->count(),
             'active' => Order::where('order_status', 'active')->count(),
             'completed' => Order::where('order_status', 'completed')->count(),
+            'hutang_denda' => Order::where('order_status', 'completed')
+                                   ->whereRaw('(late_fee_total + damage_fee_total + refund_admin_fee) > deposit_total')
+                                   ->where('is_shortfall_paid', false)
+                                   ->count(),
         ];
         
         return response()->json([
@@ -162,6 +173,8 @@ class OrderController extends Controller
                     ]);
                     $user->customerProfile()->create([
                         'phone_number' => $validated['guest_phone'],
+                        'address' => '-',
+                        'identity_card_number' => '-',
                         'registration_date' => now(),
                     ]);
                     $userId = $user->id;
@@ -483,6 +496,30 @@ class OrderController extends Controller
                 'net_refund' => $netRefund, // Bisa minus jika denda > deposit
                 'status_message' => $netRefund < 0 ? "Deposit tidak cukup. Pelanggan wajib membayar kekurangan sebesar Rp" . number_format(abs($netRefund), 0, ',', '.') : "Sisa deposit yang dapat dikembalikan ke pelanggan sebesar Rp" . number_format($netRefund, 0, ',', '.')
             ]
+        ], 200);
+    }
+
+    /**
+     * Menandai pesanan yang kekurangan deposit/shortfall sebagai lunas.
+     */
+    public function markShortfallPaid(Order $order)
+    {
+        if ($order->order_status !== 'completed') {
+            return response()->json(['success' => false, 'message' => 'Pesanan belum selesai.'], 400);
+        }
+
+        $totalDeduction = $order->late_fee_total + $order->damage_fee_total + $order->refund_admin_fee;
+        if ($totalDeduction <= $order->deposit_total) {
+            return response()->json(['success' => false, 'message' => 'Pesanan ini tidak memiliki kekurangan bayar denda.'], 400);
+        }
+
+        $order->is_shortfall_paid = true;
+        $order->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hutang sisa denda berhasil ditandai lunas.',
+            'data' => $order->fresh()
         ], 200);
     }
 }

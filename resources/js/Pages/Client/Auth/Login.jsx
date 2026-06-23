@@ -46,7 +46,7 @@ export default function Login() {
 
                 <div className="absolute top-10 left-10 flex items-center gap-3">
                     <div className="bg-[#22C55E] text-white p-1.5 rounded">
-                        <Tent className="w-5 h-5" />
+                        <img src="/logo.svg" className="w-12 h-12" alt="Logo" />
                     </div>
                     <span className="text-white font-bold tracking-widest text-sm">TIGA TITIK OUTDOOR</span>
                 </div>
@@ -96,6 +96,10 @@ export default function Login() {
                         {error && (
                             <p className="text-sm text-red-500 font-medium">{error}</p>
                         )}
+
+                        <div className="flex justify-end">
+                            <Link href="/forgot-password" className="text-[13px] text-slate-500 hover:text-[#0B402B] hover:underline font-medium">Lupa Password?</Link>
+                        </div>
 
                         <div className="pt-2 space-y-3">
                             <button

@@ -35,4 +35,14 @@ class OrderController extends Controller
         // TODO: Implement with Form Request validation
         return redirect()->route('admin.orders.index');
     }
+
+    /**
+     * Display the POS receipt for the specified order.
+     */
+    public function receipt(int $id)
+    {
+        $order = \App\Models\Order::with(['user.customerProfile', 'items.equipment'])->findOrFail($id);
+        
+        return view('admin.orders.receipt', compact('order'));
+    }
 }

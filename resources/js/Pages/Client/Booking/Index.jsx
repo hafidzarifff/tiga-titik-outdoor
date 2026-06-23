@@ -330,6 +330,31 @@ export default function Index() {
                                                     <p className="font-medium">Pesanan telah disetujui! Silakan ambil barang di toko Tiga Titik Outdoor.</p>
                                                 </div>
                                             )}
+                                            {order.order_status === 'completed' && (() => {
+                                                const netRefund = Number(order.deposit_total) - (Number(order.late_fee_total || 0) + Number(order.damage_fee_total || 0) + Number(order.refund_admin_fee || 0));
+                                                if (netRefund < 0) {
+                                                    if (!order.is_shortfall_paid) {
+                                                        return (
+                                                            <div className="bg-red-50 border border-red-200 text-red-700 text-xs p-3.5 rounded-xl flex items-start gap-2.5 mt-2">
+                                                                <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" strokeWidth={2.5} />
+                                                                <p className="font-medium">
+                                                                    Terdapat kekurangan pembayaran denda sebesar <strong>Rp {formatRupiah(Math.abs(netRefund))}</strong>. Mohon segera lunasi kekurangan ini kepada petugas.
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    } else {
+                                                        return (
+                                                            <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs p-3.5 rounded-xl flex items-start gap-2.5 mt-2">
+                                                                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" strokeWidth={2.5} />
+                                                                <p className="font-medium">
+                                                                    Terima kasih, seluruh kekurangan denda telah Anda lunasi.
+                                                                </p>
+                                                            </div>
+                                                        );
+                                                    }
+                                                }
+                                                return null;
+                                            })()}
                                         </div>
                                     )}
                                 </div>

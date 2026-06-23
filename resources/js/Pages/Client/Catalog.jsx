@@ -126,7 +126,7 @@ export default function Catalog() {
             .catch(err => console.error("Could not load categories", err));
 
         // Fetch Equipments
-        getEquipments({ per_page: 100 }) // Load all for client side filtering
+        getEquipments({ per_page: 100, status: 'Baik' }) // Load all for client side filtering
             .then(res => {
                 let items = [];
                 if (Array.isArray(res.data?.data?.data)) {
@@ -150,7 +150,8 @@ export default function Catalog() {
         setCartItems(prev => {
             const existing = prev.find(item => item.id === equipment.id);
             if (existing) {
-                return prev.map(item => item.id === equipment.id ? { ...item, qty: item.qty + 1 } : item);
+                const newQty = Math.min(existing.qty + 1, equipment.available_stock);
+                return prev.map(item => item.id === equipment.id ? { ...item, qty: newQty } : item);
             }
             return [...prev, { ...equipment, qty: 1 }];
         });

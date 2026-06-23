@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, User, CalendarClock, CreditCard, CheckCircle2, Box } from 'lucide-react';
+import axios from 'axios';
 
-export default function CompletedOrderModal({ isOpen, onClose, order }) {
+export default function CompletedOrderModal({ isOpen, onClose, order, onSuccess }) {
+    const [isSubmitting, setIsSubmitting] = useState(false);
     if (!isOpen || !order) return null;
 
     const formatRupiah = (number) => {
@@ -179,11 +181,42 @@ export default function CompletedOrderModal({ isOpen, onClose, order }) {
                 </div>
 
                 {/* Footer */}
-                <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end rounded-b-2xl">
+                <div className="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 rounded-b-2xl">
+                    <button
+                        type="button"
+                        onClick={() => window.open(`/admin/orders/${order.id}/receipt`, '_blank')}
+                        className="px-6 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl shadow-sm transition-colors"
+                    >
+                        🖨️ Cetak Struk
+                    </button>
+                    {netRefund < 0 && !order.is_shortfall_paid && (
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if(!confirm('Yakin ingin menandai sisa hutang denda ini sebagai LUNAS?')) return;
+                                setIsSubmitting(true);
+                                try {
+                                    await axios.patch(`/api/v1/orders/${order.order_number}/mark-shortfall-paid`);
+                                    alert('Hutang denda berhasil ditandai lunas!');
+                                    if(onSuccess) onSuccess();
+                                    onClose();
+                                } catch (error) {
+                                    console.error(error);
+                                    alert('Gagal menandai lunas.');
+                                } finally {
+                                    setIsSubmitting(false);
+                                }
+                            }}
+                            disabled={isSubmitting}
+                            className="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-bold rounded-xl shadow-sm transition-colors disabled:opacity-70"
+                        >
+                            {isSubmitting ? 'Memproses...' : 'Tandai Hutang Lunas'}
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={onClose}
-                        className="px-6 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-sm font-bold rounded-xl shadow-sm transition-colors"
+                        className="px-6 py-2 bg-slate-800 hover:bg-slate-900 text-white text-sm font-bold rounded-xl shadow-sm transition-colors"
                     >
                         Tutup
                     </button>

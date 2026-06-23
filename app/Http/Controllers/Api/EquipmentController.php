@@ -25,13 +25,18 @@ class EquipmentController extends Controller
     {
         $perPage = $request->query('per_page', 15);
 
-        $equipments = Equipment::with(['category', 'images'])
-            ->withSum(['orderItems as rent_count' => function ($query) {
-                $query->whereHas('order', function ($q) {
-                    $q->where('order_status', 'completed');
+        $query = Equipment::with(['category', 'images'])
+            ->withSum(['orderItems as rent_count' => function ($q) {
+                $q->whereHas('order', function ($sq) {
+                    $sq->where('order_status', 'completed');
                 });
-            }], 'qty')
-            ->latest()
+            }], 'qty');
+
+        if ($request->has('status')) {
+            $query->where('status', $request->query('status'));
+        }
+
+        $equipments = $query->latest()
             ->paginate((int) $perPage);
 
         // Get Top 5 Equipment IDs for 'Terlaris' badge

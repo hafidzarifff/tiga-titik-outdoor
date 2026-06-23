@@ -382,7 +382,7 @@ const SearchableEquipmentSelect = ({ value, onChange, equipments = [], disabled,
             </div>
 
             {isOpen && (
-                <div className="absolute z-50 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg overflow-hidden">
+                <div className="absolute bottom-full mb-1 z-50 w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden">
                     <div className="p-2 border-b border-slate-100">
                         <div className="relative">
                             <Search className="w-4 h-4 text-slate-400 absolute left-2.5 top-2.5" />

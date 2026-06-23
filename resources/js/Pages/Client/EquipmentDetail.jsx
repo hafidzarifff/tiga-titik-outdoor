@@ -28,7 +28,7 @@ export default function EquipmentDetail({ equipment }) {
         const existing = newCartItems.find(item => item.id === equipment.id);
 
         if (existing) {
-            existing.qty += unitCount;
+            existing.qty = Math.min(existing.qty + unitCount, equipment.available_stock);
         } else {
             newCartItems.push({ ...equipment, qty: unitCount });
         }

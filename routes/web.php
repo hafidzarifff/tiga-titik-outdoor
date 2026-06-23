@@ -22,6 +22,10 @@ Route::get('/catalog/{id}', [CatalogController::class, 'show'])->name('catalog.s
 
 Route::get('/cart', function () { return \Inertia\Inertia::render('Client/Cart'); })->name('cart');
 Route::get('/login', function () { return \Inertia\Inertia::render('Client/Auth/Login'); })->name('login');
+Route::get('/forgot-password', function () { return \Inertia\Inertia::render('Client/Auth/ForgotPassword'); })->middleware('guest')->name('password.request');
+Route::get('/reset-password/{token}', function (string $token) { 
+    return \Inertia\Inertia::render('Client/Auth/ResetPassword', ['token' => $token, 'email' => request('email')]); 
+})->middleware('guest')->name('password.reset');
 Route::get('/register', function () { 
     $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
     return \Inertia\Inertia::render('Client/Auth/Register', ['settings' => $settings]); 
@@ -64,6 +68,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Orders (Kelola Pesanan)
         Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+        Route::get('/orders/{id}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
         Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
         // Customers (Data Pelanggan)

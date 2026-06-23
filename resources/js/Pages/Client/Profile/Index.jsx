@@ -312,7 +312,7 @@ export default function Index() {
                         {/* Call to Action Widget */}
                         <div className="bg-[#1DD28B] rounded-[32px] p-8 text-white relative overflow-hidden shadow-sm hover:-translate-y-1 transition-transform group cursor-pointer" onClick={() => window.location.href = '/catalog'}>
                             {/* Decorative Shield Icon BG */}
-                            <Tent className="absolute -right-9 -bottom-5 w-32 h-32 text-white/20 -rotate-12 group-hover:scale-110 transition-transform duration-500" />
+                            <img src="/logo.svg" className="absolute -right-9 -bottom-5 w-32 h-32 text-white/20 -rotate-12 group-hover:scale-110 transition-transform duration-500" alt="Logo" />
 
                             <h3 className="text-xl font-black italic uppercase tracking-tight leading-tight relative z-10">
                                 SIAP UNTUK<br />KEMAH LAGI?

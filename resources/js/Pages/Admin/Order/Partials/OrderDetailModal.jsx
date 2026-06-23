@@ -342,6 +342,14 @@ export default function OrderDetailModal({ order, isOpen, onClose, onSuccess }) 
                                     Lihat Bukti Bayar
                                 </button>
                             )}
+                            {order.order_status === 'completed' && (
+                                <button
+                                    onClick={() => window.open(`/admin/orders/${order.id}/receipt`, '_blank')}
+                                    className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 rounded-xl transition-colors"
+                                >
+                                    🖨️ Cetak Struk
+                                </button>
+                            )}
                         </div>
                         {isPending && (
                             <div className="flex items-center gap-3">

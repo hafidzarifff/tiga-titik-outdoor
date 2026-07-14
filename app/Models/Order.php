@@ -31,6 +31,9 @@ class Order extends Model
         'refund_admin_fee',
         'payment_due_datetime',
         'is_shortfall_paid',
+        'is_representative_pickup',
+        'representative_name',
+        'representative_phone',
     ];
 
     protected $casts = [
@@ -45,6 +48,7 @@ class Order extends Model
         'damage_fee_total' => 'decimal:2',
         'refund_admin_fee' => 'decimal:2',
         'is_shortfall_paid' => 'boolean',
+        'is_representative_pickup' => 'boolean',
     ];
 
     public function user()

@@ -65,6 +65,25 @@ class StoreEquipmentRequest extends FormRequest
                 'integer',
                 'min:0',
             ],
+            'qty_baik' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
+            'qty_rusak_ringan' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
+            'qty_rusak_parah' => [
+                'required',
+                'integer',
+                'min:0',
+            ],
+            'condition_notes' => [
+                'nullable',
+                'string',
+            ],
             'available_stock' => [
                 'required',
                 'integer',
@@ -116,6 +135,12 @@ class StoreEquipmentRequest extends FormRequest
             'price_per_day.regex'      => 'Format harga tidak valid (maks 2 desimal).',
             'total_stock.required'     => 'Stok total wajib diisi.',
             'total_stock.min'          => 'Stok total tidak boleh negatif.',
+            'qty_baik.required'        => 'Stok baik wajib diisi.',
+            'qty_baik.min'             => 'Stok baik tidak boleh negatif.',
+            'qty_rusak_ringan.required'=> 'Stok rusak ringan wajib diisi.',
+            'qty_rusak_ringan.min'     => 'Stok rusak ringan tidak boleh negatif.',
+            'qty_rusak_parah.required' => 'Stok rusak parah wajib diisi.',
+            'qty_rusak_parah.min'      => 'Stok rusak parah tidak boleh negatif.',
             'available_stock.required' => 'Stok tersedia wajib diisi.',
             'available_stock.min'      => 'Stok tersedia tidak boleh negatif.',
             'available_stock.lte'      => 'Stok tersedia tidak boleh melebihi stok total.',

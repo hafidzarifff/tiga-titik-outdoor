@@ -210,6 +210,13 @@ export default function OrderDetailModal({ order, isOpen, onClose, onSuccess }) 
                                                 <FileText className="w-4 h-4" /> Cek Kartu Identitas
                                             </button>
                                         )}
+                                        {order.is_representative_pickup && (
+                                            <div className="mt-4 p-3 bg-orange-50 border border-orange-100 rounded-lg">
+                                                <p className="text-[10px] font-bold text-orange-800 uppercase tracking-wider mb-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> DIWAKILKAN OLEH:</p>
+                                                <p className="text-sm font-bold text-slate-800">{order.representative_name}</p>
+                                                <p className="text-xs text-slate-600 flex items-center gap-1 mt-0.5"><Phone className="w-3 h-3" /> {order.representative_phone}</p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

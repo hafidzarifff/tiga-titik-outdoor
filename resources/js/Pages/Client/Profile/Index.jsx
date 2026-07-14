@@ -323,6 +323,20 @@ export default function Index() {
                             </button>
                         </div>
 
+                        {/* Aturan Penyewaan Widget */}
+                        <div className="bg-white rounded-[32px] p-6 shadow-sm border border-slate-100 flex items-center justify-between group cursor-pointer hover:border-[#1DD28B] transition-colors" onClick={() => window.location.href = '/help-center'}>
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 bg-slate-50 group-hover:bg-[#1DD28B]/10 rounded-2xl flex items-center justify-center transition-colors">
+                                    <ShieldCheck className="w-6 h-6 text-slate-400 group-hover:text-[#1DD28B] transition-colors" />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-black text-slate-800 uppercase tracking-wide group-hover:text-[#1DD28B] transition-colors">Aturan Penyewaan</h3>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">Syarat & Ketentuan</p>
+                                </div>
+                            </div>
+                            <ArrowBigRightDash className="w-5 h-5 text-slate-300 group-hover:text-[#1DD28B] group-hover:translate-x-1 transition-all" />
+                        </div>
+
                     </div>
                 </div>
             </div>

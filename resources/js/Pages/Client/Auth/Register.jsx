@@ -27,7 +27,7 @@ export default function Register({ settings }) {
         setError('');
 
         if (!agreedTnc) {
-            setError('Anda harus menyetujui Aturan Penyewaan & Syarat Ketentuan.');
+            setError('Anda harus menyetujui Syarat & Ketentuan Penyewaan.');
             return;
         }
 
@@ -147,17 +147,21 @@ export default function Register({ settings }) {
                             <p className="text-sm text-red-500 font-medium">{error}</p>
                         )}
 
-                        <div className="flex items-start gap-3 mt-4 mb-2">
-                            <input
-                                type="checkbox"
-                                id="agree_tnc"
-                                checked={agreedTnc}
-                                onChange={(e) => setAgreedTnc(e.target.checked)}
-                                className="mt-1 w-4 h-4 text-[#0B402B] border-slate-300 rounded focus:ring-[#0B402B] cursor-pointer"
-                            />
-                            <label htmlFor="agree_tnc" className="text-[13px] text-slate-600 leading-relaxed cursor-pointer">
-                                Saya telah membaca dan menyetujui <button type="button" onClick={(e) => { e.preventDefault(); setShowTncModal(true); }} className="text-[#0B402B] font-bold hover:underline inline">Aturan Penyewaan & Syarat Ketentuan</button> yang berlaku di Tiga Titik Outdoor.
-                            </label>
+                        <div className="mt-4 mb-2">
+                            {!agreedTnc ? (
+                                <button type="button" onClick={() => setShowTncModal(true)} className="w-full text-left bg-orange-50 border border-orange-200 text-orange-700 text-[13px] p-4 rounded-xl flex items-center justify-between hover:bg-orange-100 transition-colors shadow-sm">
+                                    <span>Silakan baca dan setujui <strong>Syarat & Ketentuan</strong></span>
+                                    <span className="text-xl leading-none">&rarr;</span>
+                                </button>
+                            ) : (
+                                <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-[13px] p-4 rounded-xl flex items-center justify-between shadow-sm">
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs">✓</div>
+                                        Telah menyetujui <strong>Syarat & Ketentuan</strong>
+                                    </span>
+                                    <button type="button" onClick={() => setShowTncModal(true)} className="text-emerald-700 font-bold hover:underline text-xs">Lihat</button>
+                                </div>
+                            )}
                         </div>
 
                         <div className="pt-4">
@@ -224,14 +228,21 @@ export default function Register({ settings }) {
                         >
                             <X className="w-4 h-4" />
                         </button>
-                        <h2 className="text-2xl font-black text-[#0f172a] mb-6 pr-8">Aturan Penyewaan & Syarat Ketentuan</h2>
+                        <h2 className="text-2xl font-black text-[#0f172a] mb-6 pr-8">Syarat & Ketentuan Penyewaan</h2>
                         <div
                             className="prose prose-sm md:prose-base max-w-none text-black overflow-hidden break-words whitespace-normal"
                             dangerouslySetInnerHTML={{ __html: (settings?.store_terms_conditions || '').replace(/&nbsp;/g, ' ') || '<p>Belum ada syarat dan ketentuan yang ditetapkan.</p>' }}
                         />
-                        <div className="mt-8 pt-6 border-t border-slate-100 text-right">
-                            <button onClick={() => setShowTncModal(false)} className="bg-[#0B402B] text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:bg-[#082f1f] transition-colors">
-                                Mengerti
+                        <div className="p-6 border-t border-slate-100 shrink-0">
+                            <button 
+                                type="button" 
+                                onClick={() => {
+                                    setAgreedTnc(true);
+                                    setShowTncModal(false);
+                                }} 
+                                className="w-full bg-[#1DD28B] text-[#072F1F] py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#15b879] transition-colors"
+                            >
+                                SAYA TELAH MEMBACA DAN MENYETUJUI
                             </button>
                         </div>
                     </div>

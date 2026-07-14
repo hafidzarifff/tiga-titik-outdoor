@@ -27,6 +27,9 @@ export default function Create({ cart, settings }) {
         expected_pickup_datetime: '',
         expected_return_datetime: '',
         payment_type: 'full_payment',
+        is_representative_pickup: false,
+        representative_name: '',
+        representative_phone: '',
     });
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
@@ -56,6 +59,10 @@ export default function Create({ cart, settings }) {
         if (!data.expected_return_datetime) missingFields.push('Waktu Pengembalian');
         if (!data.ktp) missingFields.push('Verifikasi KTP / SIM');
         if (!data.payment_proof) missingFields.push('Bukti Pembayaran');
+        if (data.is_representative_pickup) {
+            if (!data.representative_name) missingFields.push('Nama Perwakilan');
+            if (!data.representative_phone) missingFields.push('No HP Perwakilan');
+        }
         if (!data.agree_tnc) missingFields.push('Persetujuan Syarat & Ketentuan');
 
         if (missingFields.length > 0) {
@@ -78,6 +85,11 @@ export default function Create({ cart, settings }) {
         formData.append('expected_pickup_datetime', formatDateTime(data.expected_pickup_datetime));
         formData.append('expected_return_datetime', formatDateTime(data.expected_return_datetime));
         formData.append('payment_type', data.payment_type);
+        formData.append('is_representative_pickup', data.is_representative_pickup ? '1' : '0');
+        if (data.is_representative_pickup) {
+            formData.append('representative_name', data.representative_name);
+            formData.append('representative_phone', data.representative_phone);
+        }
         formData.append('cart', JSON.stringify(cart));
 
         setProcessing(true);
@@ -143,16 +155,62 @@ export default function Create({ cart, settings }) {
                             <h2 className="text-sm font-bold text-[#072F1F] uppercase tracking-widest">DATA PENGAMBILAN</h2>
                         </div>
                         <div className="pl-7">
-                            <p className="text-sm font-bold text-slate-800 mb-1">
-                                {userProfile?.name || 'Guest'} <span className="text-slate-300 font-normal mx-2">|</span> <span className="text-slate-500 font-normal">{userProfile?.customer_profile?.phone_number || '-'}</span>
-                            </p>
-                            <p className="text-sm text-slate-500 mb-2">
-                                Pengambilan dilakukan di Toko Tiga Titik Outdoor
-                            </p>
-                            <div className="bg-orange-50 border border-orange-200 text-orange-600 text-xs p-3 rounded-xl flex items-start gap-2">
-                                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                                <p>Harap bawa Kartu Identitas asli (KTP/SIM/Paspor) yang diunggah saat pengambilan barang untuk pemeriksaan identitas.</p>
+                            <div className="mb-4">
+                                <p className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Siapa yang akan mengambil barang?</p>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <label className={`cursor-pointer border-2 rounded-xl p-3 flex-1 transition-all flex items-center gap-3 ${!data.is_representative_pickup ? 'border-[#1DD28B] bg-[#1DD28B]/5 shadow-sm' : 'border-slate-200 bg-white hover:border-[#1DD28B]/50'}`}>
+                                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${!data.is_representative_pickup ? 'border-[#1DD28B]' : 'border-slate-300'}`}>
+                                            {!data.is_representative_pickup && <div className="w-2 h-2 bg-[#1DD28B] rounded-full"></div>}
+                                        </div>
+                                        <span className="font-bold text-slate-900 text-xs uppercase tracking-wider">Saya Sendiri</span>
+                                        <input type="radio" className="hidden" checked={!data.is_representative_pickup} onChange={() => setData(prev => ({ ...prev, is_representative_pickup: false }))} />
+                                    </label>
+                                    <label className={`cursor-pointer border-2 rounded-xl p-3 flex-1 transition-all flex items-center gap-3 ${data.is_representative_pickup ? 'border-[#1DD28B] bg-[#1DD28B]/5 shadow-sm' : 'border-slate-200 bg-white hover:border-[#1DD28B]/50'}`}>
+                                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${data.is_representative_pickup ? 'border-[#1DD28B]' : 'border-slate-300'}`}>
+                                            {data.is_representative_pickup && <div className="w-2 h-2 bg-[#1DD28B] rounded-full"></div>}
+                                        </div>
+                                        <span className="font-bold text-slate-900 text-xs uppercase tracking-wider">Diwakilkan Orang Lain</span>
+                                        <input type="radio" className="hidden" checked={data.is_representative_pickup} onChange={() => setData(prev => ({ ...prev, is_representative_pickup: true }))} />
+                                    </label>
+                                </div>
                             </div>
+
+                            {!data.is_representative_pickup ? (
+                                <>
+                                    <p className="text-sm font-bold text-slate-800 mb-1">
+                                        {userProfile?.name || 'Guest'} <span className="text-slate-300 font-normal mx-2">|</span> <span className="text-slate-500 font-normal">{userProfile?.customer_profile?.phone_number || '-'}</span>
+                                    </p>
+                                    <p className="text-sm text-slate-500 mb-2">
+                                        Pengambilan dilakukan di Toko Tiga Titik Outdoor
+                                    </p>
+                                    <div className="bg-orange-50 border border-orange-200 text-orange-600 text-xs p-3 rounded-xl flex items-start gap-2">
+                                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                                        <p>Wajib membawa <strong>KTP Asli</strong> Anda (atau identitas asli lainnya yang diunggah) saat pengambilan barang untuk verifikasi.</p>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">NAMA PERWAKILAN <span className="text-red-500">*</span></label>
+                                            <input type="text" value={data.representative_name} onChange={(e) => setData(prev => ({...prev, representative_name: e.target.value}))} className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-[#1DD28B] focus:border-[#1DD28B] p-3" placeholder="Nama lengkap perwakilan" />
+                                            {errors.representative_name && <p className="text-red-500 text-xs">{errors.representative_name[0]}</p>}
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">NO HP PERWAKILAN <span className="text-red-500">*</span></label>
+                                            <input type="text" value={data.representative_phone} onChange={(e) => setData(prev => ({...prev, representative_phone: e.target.value}))} className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-[#1DD28B] focus:border-[#1DD28B] p-3" placeholder="Nomor WhatsApp" />
+                                            {errors.representative_phone && <p className="text-red-500 text-xs">{errors.representative_phone[0]}</p>}
+                                        </div>
+                                    </div>
+                                    <p className="text-sm text-slate-500 mb-2">
+                                        Pengambilan dilakukan di Toko Tiga Titik Outdoor
+                                    </p>
+                                    <div className="bg-orange-50 border border-orange-200 text-orange-600 text-xs p-3 rounded-xl flex items-start gap-2">
+                                        <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                                        <p>Perwakilan yang mengambil barang <strong>wajib membawa KTP Asli mereka</strong> dan menginformasikan nomor pesanan Anda kepada Admin di toko.</p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -187,10 +245,16 @@ export default function Create({ cart, settings }) {
                             </div>
                         </div>
                         {data.expected_pickup_datetime && data.expected_return_datetime && (
-                            <div className="mt-6 bg-[#1DD28B]/5 border border-[#1DD28B]/20 p-4 rounded-xl flex items-center justify-between">
-                                <span className="text-xs font-bold text-[#072F1F] uppercase">DURASI SEWA</span>
-                                <span className="text-lg font-black text-[#1DD28B]">{rentalDays} HARI</span>
-                            </div>
+                            <>
+                                <div className="mt-6 bg-[#1DD28B]/5 border border-[#1DD28B]/20 p-4 rounded-xl flex items-center justify-between">
+                                    <span className="text-xs font-bold text-[#072F1F] uppercase">DURASI SEWA</span>
+                                    <span className="text-lg font-black text-[#1DD28B]">{rentalDays} HARI</span>
+                                </div>
+                                <div className="mt-4 bg-red-50 border border-red-200 text-red-600 text-xs p-3 rounded-xl flex items-start gap-2">
+                                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+                                    <p><strong>PENTING:</strong> Batas toleransi keterlambatan pengambilan barang dari waktu yang ditentukan adalah 2 jam. Pesanan dapat dibatalkan secara otomatis jika Anda melewati batas waktu tersebut tanpa konfirmasi ke Admin.</p>
+                                </div>
+                            </>
                         )}
                     </div>
 
@@ -346,25 +410,23 @@ export default function Create({ cart, settings }) {
 
                     {/* S&K dan Submit */}
                     <div className="bg-[#072F1F] rounded-[32px] p-6 md:p-8 shadow-xl mt-8">
-                        <label className="flex items-start gap-4 cursor-pointer group mb-8">
-                            <div className="relative flex items-center justify-center mt-0.5">
-                                <input
-                                    type="checkbox"
-                                    className="peer sr-only"
-                                    checked={data.agree_tnc}
-                                    onChange={(e) => setData(prev => ({ ...prev, agree_tnc: e.target.checked }))}
-                                />
-                                <div className="w-6 h-6 rounded-lg border-2 border-slate-500 peer-checked:border-[#1DD28B] peer-checked:bg-[#1DD28B] transition-all flex items-center justify-center">
-                                    <CheckCircle2 className={`w-4 h-4 text-[#072F1F] transition-transform ${data.agree_tnc ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} strokeWidth={3} />
+                        <div className="mb-8">
+                            {!data.agree_tnc ? (
+                                <button type="button" onClick={() => setIsTnCOpen(true)} className="w-full text-left bg-orange-500/10 border border-orange-500/30 text-orange-400 text-sm p-4 rounded-2xl flex items-center justify-between hover:bg-orange-500/20 transition-colors">
+                                    <span>Silakan baca dan setujui <strong>Syarat & Ketentuan</strong></span>
+                                    <span className="text-xl leading-none">&rarr;</span>
+                                </button>
+                            ) : (
+                                <div className="bg-[#1DD28B]/10 border border-[#1DD28B]/30 text-[#1DD28B] text-sm p-4 rounded-2xl flex items-center justify-between">
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-5 h-5 rounded-full bg-[#1DD28B] text-[#072F1F] flex items-center justify-center text-xs font-bold">✓</div>
+                                        Telah menyetujui <strong>Syarat & Ketentuan</strong>
+                                    </span>
+                                    <button type="button" onClick={() => setIsTnCOpen(true)} className="text-[#1DD28B] font-bold hover:underline text-xs">Lihat</button>
                                 </div>
-                            </div>
-                            <div className="flex-1">
-                                <p className="text-sm text-slate-300 leading-relaxed">
-                                    Saya telah membaca, memahami, dan menyetujui <button type="button" onClick={() => setIsTnCOpen(true)} className="text-[#1DD28B] font-bold hover:underline">Syarat & Ketentuan</button> penyewaan perlengkapan outdoor di Tiga Titik Outdoor.
-                                </p>
-                                {errors.agree_tnc && <p className="text-red-400 text-xs mt-1">{errors.agree_tnc[0] || errors.agree_tnc}</p>}
-                            </div>
-                        </label>
+                            )}
+                            {errors.agree_tnc && <p className="text-red-400 text-xs mt-2">{errors.agree_tnc[0] || errors.agree_tnc}</p>}
+                        </div>
 
                         <button
                             type="submit"
@@ -465,8 +527,14 @@ export default function Create({ cart, settings }) {
                     </div>
 
                     <div className="p-6 border-t border-slate-100 shrink-0">
-                        <button onClick={() => setIsTnCOpen(false)} className="w-full bg-[#1DD28B] text-[#072F1F] py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#15b879] transition-colors">
-                            SAYA MENGERTI
+                        <button 
+                            onClick={() => {
+                                setData(prev => ({ ...prev, agree_tnc: true }));
+                                setIsTnCOpen(false);
+                            }} 
+                            className="w-full bg-[#1DD28B] text-[#072F1F] py-4 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-[#15b879] transition-colors"
+                        >
+                            SAYA TELAH MEMBACA DAN MENYETUJUI
                         </button>
                     </div>
                 </div>

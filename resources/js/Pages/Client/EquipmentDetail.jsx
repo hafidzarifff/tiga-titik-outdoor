@@ -28,8 +28,16 @@ export default function EquipmentDetail({ equipment }) {
         const existing = newCartItems.find(item => item.id === equipment.id);
 
         if (existing) {
-            existing.qty = Math.min(existing.qty + unitCount, equipment.available_stock);
+            if (existing.qty + unitCount > equipment.available_stock) {
+                alert(`Stok maksimal yang tersedia untuk alat ini adalah ${equipment.available_stock} unit.`);
+                return;
+            }
+            existing.qty += unitCount;
         } else {
+            if (unitCount > equipment.available_stock) {
+                alert(`Stok maksimal yang tersedia untuk alat ini adalah ${equipment.available_stock} unit.`);
+                return;
+            }
             newCartItems.push({ ...equipment, qty: unitCount });
         }
 

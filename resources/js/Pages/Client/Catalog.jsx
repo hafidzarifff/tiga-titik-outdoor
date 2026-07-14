@@ -150,25 +150,51 @@ export default function Catalog() {
         setCartItems(prev => {
             const existing = prev.find(item => item.id === equipment.id);
             if (existing) {
-                const newQty = Math.min(existing.qty + 1, equipment.available_stock);
+                if (existing.qty >= equipment.available_stock) {
+                    alert(`Stok maksimal yang tersedia untuk alat ini adalah ${equipment.available_stock} unit.`);
+                    return prev;
+                }
+                const newQty = existing.qty + 1;
+                
+                // Show temporary toast or alert
+                const toast = document.createElement('div');
+                toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-[#072F1F] text-white px-5 py-3 rounded-full text-sm font-bold shadow-xl shadow-[#072F1F]/20 animate-in slide-in-from-bottom-5 fade-in duration-300';
+                toast.innerText = 'Ditambahkan ke keranjang ✓';
+                document.body.appendChild(toast);
+                setTimeout(() => {
+                    toast.remove();
+                }, 2000);
+                
                 return prev.map(item => item.id === equipment.id ? { ...item, qty: newQty } : item);
             }
+            
+            // Show temporary toast or alert
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-[#072F1F] text-white px-5 py-3 rounded-full text-sm font-bold shadow-xl shadow-[#072F1F]/20 animate-in slide-in-from-bottom-5 fade-in duration-300';
+            toast.innerText = 'Ditambahkan ke keranjang ✓';
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+            
             return [...prev, { ...equipment, qty: 1 }];
         });
-
-        // Show temporary toast or alert
-        const toast = document.createElement('div');
-        toast.className = 'fixed bottom-10 left-1/2 -translate-x-1/2 z-50 bg-[#072F1F] text-white px-5 py-3 rounded-full text-sm font-bold shadow-xl shadow-[#072F1F]/20 animate-in slide-in-from-bottom-5 fade-in duration-300';
-        toast.innerText = 'Ditambahkan ke keranjang ✓';
-        document.body.appendChild(toast);
-        setTimeout(() => {
-            toast.remove();
-        }, 2000);
     };
 
     const filteredEquipments = equipments.filter(eq => {
         const matchesSearch = eq?.name?.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = activeCategory === 'all' || eq.category_id === activeCategory;
+        
+        let matchesCategory = false;
+        if (activeCategory === 'all') {
+            matchesCategory = true;
+        } else if (activeCategory === 'terlaris') {
+            matchesCategory = eq.is_top_rated || (eq.rent_count && eq.rent_count > 5); // Fallback to rent_count > 5
+        } else if (activeCategory === 'terbaru') {
+            matchesCategory = eq.created_at && (new Date() - new Date(eq.created_at)) < 7 * 24 * 60 * 60 * 1000;
+        } else {
+            matchesCategory = eq.category_id === activeCategory;
+        }
+        
         return matchesSearch && matchesCategory;
     });
 
@@ -210,10 +236,15 @@ export default function Catalog() {
                     <div className="relative">
                         <select
                             value={activeCategory}
-                            onChange={(e) => setActiveCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setActiveCategory(val === 'all' || val === 'terbaru' || val === 'terlaris' ? val : Number(val));
+                            }}
                             className="w-full appearance-none bg-[#F8FAFC] border border-slate-200 text-slate-700 font-bold text-sm tracking-wider uppercase rounded-xl px-5 py-3.5 outline-none focus:border-[#1DD28B] focus:ring-1 focus:ring-[#1DD28B] shadow-sm"
                         >
                             <option value="all">SEMUA KATEGORI</option>
+                            <option value="terbaru">🔥 TERBARU</option>
+                            <option value="terlaris">⭐ TERLARIS</option>
                             {categories.map(cat => (
                                 <option key={cat.id} value={cat.id}>{cat.name.toUpperCase()}</option>
                             ))}
@@ -234,6 +265,26 @@ export default function Catalog() {
                             }`}
                     >
                         <LayoutGrid className="w-4 h-4" /> SEMUA
+                    </button>
+
+                    <button
+                        onClick={() => setActiveCategory('terbaru')}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 ${activeCategory === 'terbaru'
+                            ? 'bg-[#1DD28B] text-white shadow-md shadow-[#1DD28B]/20 border border-transparent'
+                            : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300 shadow-sm'
+                            }`}
+                    >
+                        <Leaf className="w-4 h-4 text-emerald-500" /> TERBARU
+                    </button>
+
+                    <button
+                        onClick={() => setActiveCategory('terlaris')}
+                        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 ${activeCategory === 'terlaris'
+                            ? 'bg-[#1DD28B] text-white shadow-md shadow-[#1DD28B]/20 border border-transparent'
+                            : 'bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300 shadow-sm'
+                            }`}
+                    >
+                        <Star className="w-4 h-4 text-orange-400" /> TERLARIS
                     </button>
 
                     {categories.map(cat => (

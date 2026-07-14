@@ -185,11 +185,23 @@ export default function AdminEquipmentCard({ item, onEdit, onToggleStatus, onDel
                             {item.available_stock} <span className="text-slate-400 font-medium">/ {item.total_stock}</span>
                         </span>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden mb-2">
                         <div
                             className={`h-full rounded-full transition-all duration-500 ${getStockColor()}`}
                             style={{ width: `${stockPercentage}%` }}
                         />
+                    </div>
+                    {/* Condition Breakdown */}
+                    <div className="flex gap-2 text-[10px] font-medium mt-2">
+                        <div className="bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-100 flex-1 text-center">
+                            Baik: {item.qty_baik || 0}
+                        </div>
+                        <div className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded border border-orange-100 flex-1 text-center">
+                            Rusak Sdg: {item.qty_rusak_ringan || 0}
+                        </div>
+                        <div className="bg-red-50 text-red-700 px-2 py-0.5 rounded border border-red-100 flex-1 text-center">
+                            Rusak Prh: {item.qty_rusak_parah || 0}
+                        </div>
                     </div>
                 </div>
 

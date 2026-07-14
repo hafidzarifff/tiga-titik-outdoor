@@ -43,6 +43,9 @@ class BookingController extends Controller
             'expected_pickup_datetime' => 'required|date',
             'expected_return_datetime' => 'required|date|after:expected_pickup_datetime',
             'payment_type' => 'required|in:dp_30,full_payment',
+            'is_representative_pickup' => 'nullable|in:0,1,true,false',
+            'representative_name' => 'nullable|string|max:255|required_if:is_representative_pickup,1,true',
+            'representative_phone' => 'nullable|string|max:20|required_if:is_representative_pickup,1,true',
         ]);
 
         $cart = json_decode($request->input('cart'), true);
@@ -137,6 +140,9 @@ class BookingController extends Controller
                 'payment_status' => 'verifying',
                 'order_status' => 'pending',
                 'payment_due_datetime' => now()->addHour(),
+                'is_representative_pickup' => filter_var($request->input('is_representative_pickup'), FILTER_VALIDATE_BOOLEAN),
+                'representative_name' => $request->input('representative_name'),
+                'representative_phone' => $request->input('representative_phone'),
             ]);
 
             // 4. Create Order Items

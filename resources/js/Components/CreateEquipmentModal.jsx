@@ -13,6 +13,10 @@ const INITIAL_FORM = {
     price_per_day: '',
     total_stock: 1,
     available_stock: 1,
+    qty_baik: 1,
+    qty_rusak_ringan: 0,
+    qty_rusak_parah: 0,
+    condition_notes: '',
     status: 'Baik',
     deposit_amount: 0,
     penalty_hourly_rate: 0,
@@ -57,6 +61,10 @@ export default function CreateEquipmentModal({ isOpen, onClose, onSuccess, categ
                     price_per_day: editingItem.price_per_day || '',
                     total_stock: editingItem.total_stock || 0,
                     available_stock: editingItem.available_stock || 0,
+                    qty_baik: editingItem.qty_baik || 0,
+                    qty_rusak_ringan: editingItem.qty_rusak_ringan || 0,
+                    qty_rusak_parah: editingItem.qty_rusak_parah || 0,
+                    condition_notes: editingItem.condition_notes || '',
                     status: editingItem.status || 'Baik',
                     deposit_amount: editingItem.deposit_amount || 0,
                     penalty_hourly_rate: editingItem.penalty_hourly_rate || 0,
@@ -80,7 +88,16 @@ export default function CreateEquipmentModal({ isOpen, onClose, onSuccess, categ
      * Handle text/select/number input changes.
      */
     const handleChange = (field, value) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        setFormData((prev) => {
+            const next = { ...prev, [field]: value };
+            
+            // Auto calculate total_stock if condition quantities change
+            if (['qty_baik', 'qty_rusak_ringan', 'qty_rusak_parah'].includes(field)) {
+                next.total_stock = (parseInt(next.qty_baik) || 0) + (parseInt(next.qty_rusak_ringan) || 0) + (parseInt(next.qty_rusak_parah) || 0);
+            }
+            
+            return next;
+        });
         if (errors[field]) {
             setErrors((prev) => {
                 const next = { ...prev };
@@ -162,6 +179,10 @@ export default function CreateEquipmentModal({ isOpen, onClose, onSuccess, categ
             payload.append('price_per_day', formData.price_per_day);
             payload.append('total_stock', formData.total_stock);
             payload.append('available_stock', formData.available_stock);
+            payload.append('qty_baik', formData.qty_baik);
+            payload.append('qty_rusak_ringan', formData.qty_rusak_ringan);
+            payload.append('qty_rusak_parah', formData.qty_rusak_parah);
+            payload.append('condition_notes', formData.condition_notes);
             payload.append('status', formData.status);
             payload.append('deposit_amount', formData.deposit_amount);
             payload.append('penalty_hourly_rate', formData.penalty_hourly_rate);
@@ -290,6 +311,56 @@ export default function CreateEquipmentModal({ isOpen, onClose, onSuccess, categ
                             {errors.category_id && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors.category_id) ? errors.category_id[0] : errors.category_id}</p>}
                         </div>
 
+                        {/* Condition Fields */}
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-2">Qty Baik</label>
+                                <input
+                                    type="number"
+                                    value={formData.qty_baik}
+                                    onChange={(e) => handleChange('qty_baik', parseInt(e.target.value) || 0)}
+                                    min="0"
+                                    className={`w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition ${errors.qty_baik ? 'border-red-300' : 'border-gray-300'}`}
+                                />
+                                {errors.qty_baik && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors.qty_baik) ? errors.qty_baik[0] : errors.qty_baik}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-2">Rusak Sedang</label>
+                                <input
+                                    type="number"
+                                    value={formData.qty_rusak_ringan}
+                                    onChange={(e) => handleChange('qty_rusak_ringan', parseInt(e.target.value) || 0)}
+                                    min="0"
+                                    className={`w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition ${errors.qty_rusak_ringan ? 'border-red-300' : 'border-gray-300'}`}
+                                />
+                                {errors.qty_rusak_ringan && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors.qty_rusak_ringan) ? errors.qty_rusak_ringan[0] : errors.qty_rusak_ringan}</p>}
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 mb-2">Rusak Parah</label>
+                                <input
+                                    type="number"
+                                    value={formData.qty_rusak_parah}
+                                    onChange={(e) => handleChange('qty_rusak_parah', parseInt(e.target.value) || 0)}
+                                    min="0"
+                                    className={`w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition ${errors.qty_rusak_parah ? 'border-red-300' : 'border-gray-300'}`}
+                                />
+                                {errors.qty_rusak_parah && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors.qty_rusak_parah) ? errors.qty_rusak_parah[0] : errors.qty_rusak_parah}</p>}
+                            </div>
+                        </div>
+
+                        {/* Condition Notes */}
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">Catatan Keadaan Barang</label>
+                            <textarea
+                                value={formData.condition_notes}
+                                onChange={(e) => handleChange('condition_notes', e.target.value)}
+                                placeholder="Contoh: Ada robekan 2cm di tenda A"
+                                rows="2"
+                                className={`w-full border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition ${errors.condition_notes ? 'border-red-300' : 'border-gray-300'}`}
+                            ></textarea>
+                            {errors.condition_notes && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors.condition_notes) ? errors.condition_notes[0] : errors.condition_notes}</p>}
+                        </div>
+
                         {/* Stock Fields */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -299,7 +370,9 @@ export default function CreateEquipmentModal({ isOpen, onClose, onSuccess, categ
                                     value={formData.total_stock}
                                     onChange={(e) => handleChange('total_stock', parseInt(e.target.value) || 0)}
                                     min="0"
-                                    className={`w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition ${errors.total_stock ? 'border-red-300' : 'border-gray-300'}`}
+                                    readOnly
+                                    className={`w-full bg-slate-100 border rounded-lg px-4 py-2.5 text-sm focus:ring-0 outline-none transition border-gray-300 cursor-not-allowed text-slate-500 font-semibold`}
+                                    title="Dihitung otomatis dari total jumlah kondisi"
                                 />
                                 {errors.total_stock && <p className="text-red-500 text-xs mt-1">{Array.isArray(errors.total_stock) ? errors.total_stock[0] : errors.total_stock}</p>}
                             </div>
